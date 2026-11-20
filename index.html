@@ -922,6 +922,30 @@ button { font: inherit; }
   transform: rotate(-2deg);
 }
 .memory-stamp .bi { color: var(--rose-ink); font-size: .95em; }
+/* Kertas berbingkai dan palet lama membuat permainan terasa seperti halaman scrapbook yang sama. */
+.memory-game-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin-top: 30px;
+  padding: .7rem 1.2rem;
+  color: var(--paper);
+  background: var(--rose-ink);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 0 4px 0 rgba(30, 58, 74, .18);
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-weight: 500;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.memory-game-link:hover {
+  color: var(--paper);
+  background: #8d3146;
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(30, 58, 74, .18);
+}
 /* =========================================================
    Gallery
    ========================================================= */
@@ -989,6 +1013,113 @@ button { font: inherit; }
   color: var(--blue-700);
 }
 .gallery-quote .bi { display: block; margin-bottom: .3rem; font-size: .95rem; color: var(--rose); }
+/* Blue marks a playful pause; familiar paper, type, and roomy card gaps keep the scrapbook feel. */
+.memory-game-section { background: var(--blue-50); }
+.memory-game-panel {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(18px, 4vw, 34px);
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: 8px 8px 0 rgba(46, 108, 138, .14);
+}
+.memory-game-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(8px, 2vw, 14px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.memory-game-card {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 76px;
+  padding: 8px;
+  color: var(--ink);
+  background: var(--blue-50);
+  border: 2px dashed var(--blue-700);
+  border-radius: 12px;
+  font-family: "Fredoka", system-ui, sans-serif;
+  font-size: clamp(.88rem, 2.4vw, 1.12rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: color .18s ease, background-color .18s ease, transform .18s ease;
+}
+.memory-game-card:not([aria-disabled="true"]):hover {
+  background: var(--blue-100);
+  transform: translateY(-2px);
+}
+.memory-game-card:not([aria-disabled="true"]):active { transform: translateY(1px); }
+.memory-game-card:not(.is-open) { font-size: clamp(1.2rem, 5vw, 1.5rem); }
+.memory-game-card:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+.memory-game-card.is-open {
+  color: var(--paper);
+  background: var(--blue-700);
+  border-style: solid;
+}
+.memory-game-card.is-open:focus-visible { outline-color: var(--paper); }
+.memory-game-card.is-mismatch {
+  color: var(--paper);
+  background: var(--rose-ink);
+  border-color: var(--rose-ink);
+}
+.memory-game-card.is-matched {
+  color: var(--ink);
+  background: var(--rose-soft);
+  border-style: solid;
+  border-color: var(--rose-ink);
+  cursor: default;
+}
+.memory-game-card.is-matched:focus-visible { outline-color: var(--ink); }
+.memory-game-summary {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  margin: 22px 0 10px;
+  font-family: "Fredoka", system-ui, sans-serif;
+}
+.memory-game-summary p { margin: 0; }
+.memory-game-summary strong { color: var(--rose-ink); }
+.memory-game-fallback {
+  max-width: 46ch;
+  margin: 0 auto;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.memory-game-status {
+  min-height: 1.8em;
+  margin: 0 auto 18px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.memory-game-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.memory-game-actions .btn-paper { min-width: 150px; }
+.memory-game-next {
+  display: block;
+  width: fit-content;
+  min-height: 44px;
+  margin: 18px auto 0;
+  color: var(--blue-900);
+  font-weight: 700;
+  text-align: center;
+  text-underline-offset: 4px;
+}
 
 /* =========================================================
    Letter
@@ -1161,11 +1292,33 @@ button { font: inherit; }
 }
 .cake-part--plate { transform-origin: 50% 50%; }
 .cake-part--candles { transform-origin: 50% 100%; }
-.cake-scene.is-blown .cake-svg { animation: cakeWiggle .6s ease; }
-@keyframes cakeWiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-1.1deg); }
-  75% { transform: rotate(1.1deg); }
+/* Topmost pieces land first when the cake stage enters view. */
+.cake-stage.is-visible .cake-part--candles {
+  animation: cakeStackDrop 1.05s var(--ease-soft) .08s both;
+}
+.cake-stage.is-visible .cake-part--top {
+  animation: cakeStackDrop 1.05s var(--ease-soft) .38s both;
+}
+.cake-stage.is-visible .cake-part--base {
+  animation: cakeStackDrop 1.05s var(--ease-soft) .68s both;
+}
+.cake-stage.is-visible .cake-part--plate {
+  animation: cakeStackDrop 1.05s var(--ease-soft) .98s both;
+}
+@keyframes cakeStackDrop {
+  0% { opacity: 0; transform: translateY(-82px) scale(.97); }
+  72% { opacity: 1; transform: translateY(7px) scale(1.02); }
+  88% { transform: translateY(-3px) scale(.995); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* The brief spring gives the blow a payoff; staggered flames make the change easy to follow. */
+.cake-scene.is-blown .cake-svg { animation: cakeBlowBounce .95s var(--ease-soft); }
+@keyframes cakeBlowBounce {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  14% { transform: translateY(5px) scale(.97, 1.04) rotate(-1deg); }
+  42% { transform: translateY(-24px) scale(1.04, .97) rotate(1.5deg); }
+  62% { transform: translateY(0) scale(.99, 1.02) rotate(-.8deg); }
+  80% { transform: translateY(-6px) scale(1.01, .99) rotate(.4deg); }
 }
 
 .flame {
@@ -1186,6 +1339,8 @@ button { font: inherit; }
   transition: opacity .22s ease, transform .22s ease;
   animation: none;
 }
+.cake-scene.is-blown .flame--2 { transition-delay: .08s; }
+.cake-scene.is-blown .flame--3 { transition-delay: .16s; }
 .smoke {
   opacity: 0;
   transform-box: fill-box;
@@ -1447,6 +1602,7 @@ body.site-open .scroll-progress { opacity: 1; }
     transform: none !important;
     transition: none !important;
   }
+  .cake-scene.is-blown .flame { transition-delay: 0s !important; }
   .hearts, .balloons { display: none; }
   .hero-title .underline path { stroke-dashoffset: 0; }
 }
@@ -1467,6 +1623,7 @@ body.site-open .scroll-progress { opacity: 1; }
   .balloon--2 { display: none; }
   .timeline { max-width: 820px; }
   .gallery-wall { column-count: 2; }
+  .memory-game-board { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (max-width: 767.98px) {
@@ -1538,6 +1695,8 @@ body.site-open .scroll-progress { opacity: 1; }
 
   .gallery-wall { column-gap: 16px; padding: 8px 6px; }
   .gallery-item { margin-bottom: 18px; }
+  .memory-game-panel { box-shadow: 5px 5px 0 rgba(46, 108, 138, .14); }
+  .memory-game-card { min-height: 68px; }
   .gallery-item:nth-child(2),
   .gallery-item:nth-child(5) { margin-top: 0; }
   .polaroid { padding: 7px 7px 0; }
@@ -1623,6 +1782,7 @@ body.site-open .scroll-progress { opacity: 1; }
   .countdown__num { font-size: 1.2rem; }
   .countdown__label { font-size: .58rem; }
   .gallery-wall { column-count: 1; }
+  .memory-game-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .letter-body { font-size: .92rem; }
 }
 
@@ -1829,12 +1989,40 @@ body.site-open .scroll-progress { opacity: 1; }
           </article>
         </li>
       </ol>
+      <p class="text-center"><a class="memory-game-link" href="#permainan">Cocokkan kenangan</a></p>
     </div>
 
     <div class="wave-bottom" aria-hidden="true">
       <svg viewBox="0 0 1440 70" preserveAspectRatio="none">
         <path d="M0,42 C180,70 360,12 540,32 C720,54 900,70 1080,44 C1260,18 1380,20 1440,34 L1440,70 L0,70 Z" fill="#FFF9F0"/>
       </svg>
+    </div>
+  </section>
+
+  <!-- =====================================================
+       PERMAINAN KENANGAN
+       ===================================================== -->
+  <section class="section memory-game-section" id="permainan" aria-labelledby="memoryGameTitle">
+    <div class="container">
+      <div class="section-head section-head--center">
+        <p class="section-kicker">main sebentar</p>
+        <h2 class="section-title" id="memoryGameTitle">Cocokkan kenangan ade.</h2>
+        <p class="section-lead">Buka dua kartu sekali jalan. Cari pasangan kata dari cerita amas dan ade.</p>
+      </div>
+
+      <div class="memory-game-panel">
+        <p class="memory-game-fallback" id="memoryGameFallback">Permainan perlu JavaScript supaya kartu bisa dibuka. Cerita, surat, dan kue tetap bisa dibaca.</p>
+        <ul class="memory-game-board" id="memoryGameBoard" aria-label="Kartu permainan kenangan" hidden></ul>
+        <div class="memory-game-summary" role="group" aria-label="Hasil permainan" hidden>
+          <p><strong id="memoryGamePairs">0 dari 6</strong> pasangan ditemukan</p>
+          <p><strong id="memoryGameTurns">0</strong> percobaan</p>
+        </div>
+        <p class="memory-game-status" id="memoryGameStatus" role="status" aria-live="polite" hidden></p>
+        <div class="memory-game-actions">
+          <button type="button" class="btn-paper btn-paper--rose" id="memoryGameRestart" hidden>Acak ulang</button>
+        </div>
+        <a class="memory-game-next" id="memoryGameNext" href="#surat" hidden>Lanjut baca surat dari amas</a>
+      </div>
     </div>
   </section>
 
@@ -2567,40 +2755,7 @@ body.site-open .scroll-progress { opacity: 1; }
      ===================================================== */
   const progressBar = $('#progressBar');
   const parallaxEls = $$('[data-parallax]');
-  const cakeAssemblyScene = $('#cakeScene');
-  const cakeAssemblyParts = cakeAssemblyScene ? [
-    { el: $('.cake-part--top', cakeAssemblyScene), start: 0.02, end: 0.34, lift: -46 },
-    { el: $('.cake-part--base', cakeAssemblyScene), start: 0.22, end: 0.56, lift: -24 },
-    { el: $('.cake-part--plate', cakeAssemblyScene), start: 0.44, end: 0.68, lift: -18 },
-    { el: $('.cake-part--candles', cakeAssemblyScene), start: 0.56, end: 0.86, lift: -20 }
-  ].filter((part) => part.el) : [];
   let scrollQueued = false;
-
-  const clamp01 = (value) => Math.min(1, Math.max(0, value));
-
-  function updateCakeAssembly() {
-    if (!cakeAssemblyScene || !cakeAssemblyParts.length) return;
-
-    if (isReduced()) {
-      cakeAssemblyParts.forEach(({ el }) => {
-        el.style.removeProperty('opacity');
-        el.style.removeProperty('transform');
-      });
-      return;
-    }
-
-    const rect = cakeAssemblyScene.getBoundingClientRect();
-    const startY = window.innerHeight * 0.92;
-    const endY = window.innerHeight * 0.38;
-    const progress = clamp01((startY - rect.top) / (startY - endY));
-
-    cakeAssemblyParts.forEach(({ el, start, end, lift }) => {
-      const local = clamp01((progress - start) / (end - start));
-      const eased = local * local * (3 - 2 * local);
-      el.style.opacity = eased.toFixed(3);
-      el.style.transform = 'translateY(' + ((1 - eased) * lift).toFixed(2) + 'px)';
-    });
-  }
 
   function updateOnScroll() {
     const y = window.scrollY || window.pageYOffset;
@@ -2615,7 +2770,6 @@ body.site-open .scroll-progress { opacity: 1; }
         el.style.transform = 'translate3d(0,' + shift.toFixed(1) + 'px,0)';
       });
     }
-    updateCakeAssembly();
   }
 
   function onScroll() {
@@ -2694,6 +2848,141 @@ body.site-open .scroll-progress { opacity: 1; }
       modalImg.removeAttribute('src');
       modalImg.onerror = null;
     });
+  }
+
+  /* =====================================================
+     Permainan: cocokkan kata dari cerita amas dan ade
+     ===================================================== */
+  const memoryGameBoard = $('#memoryGameBoard');
+  const memoryGameFallback = $('#memoryGameFallback');
+  const memoryGameSummary = $('.memory-game-summary');
+  const memoryGameStatus = $('#memoryGameStatus');
+  const memoryGamePairs = $('#memoryGamePairs');
+  const memoryGameTurns = $('#memoryGameTurns');
+  const memoryGameRestart = $('#memoryGameRestart');
+  const memoryGameNext = $('#memoryGameNext');
+  const memoryLabels = ['chat gabut', 'jajan', 'peluk', 'senyum', 'kenangan', 'tunangan'];
+  let memoryFirstCard = null;
+  let memoryChecking = false;
+  let memoryMatchedPairs = 0;
+  let memoryAttempts = 0;
+  let memoryMismatchTimer = 0;
+
+  function updateMemoryGameSummary() {
+    if (memoryGamePairs) memoryGamePairs.textContent = memoryMatchedPairs + ' dari ' + memoryLabels.length;
+    if (memoryGameTurns) memoryGameTurns.textContent = String(memoryAttempts);
+  }
+
+  function hideMemoryCard(card) {
+    card.textContent = '♡';
+    card.setAttribute('aria-label', 'Kartu ' + card.dataset.position + ', tertutup');
+    card.setAttribute('aria-pressed', 'false');
+    card.classList.remove('is-open', 'is-mismatch');
+  }
+
+  function revealMemoryCard(card) {
+    card.textContent = card.dataset.label;
+    card.setAttribute('aria-label', 'Kartu ' + card.dataset.position + ': ' + card.dataset.label);
+    card.setAttribute('aria-pressed', 'true');
+    card.classList.add('is-open');
+  }
+
+  function chooseMemoryCard(card) {
+    if (memoryChecking || card.classList.contains('is-open') || card.classList.contains('is-matched')) return;
+
+    revealMemoryCard(card);
+    if (!memoryFirstCard) {
+      memoryFirstCard = card;
+      if (memoryGameStatus) memoryGameStatus.textContent = 'Kartu pertama terbuka. Pilih satu kartu lagi.';
+      return;
+    }
+
+    const firstCard = memoryFirstCard;
+    memoryFirstCard = null;
+    memoryAttempts += 1;
+    updateMemoryGameSummary();
+
+    if (firstCard.dataset.pair === card.dataset.pair) {
+      memoryMatchedPairs += 1;
+      [firstCard, card].forEach((matchedCard) => {
+        matchedCard.classList.add('is-matched');
+        matchedCard.setAttribute('aria-label', 'Pasangan ditemukan: ' + matchedCard.dataset.label);
+        matchedCard.setAttribute('aria-disabled', 'true');
+      });
+      updateMemoryGameSummary();
+
+      if (memoryMatchedPairs === memoryLabels.length) {
+        if (memoryGameStatus) memoryGameStatus.textContent = 'Semua pasangan ketemu. Sekarang lanjut baca surat dari amas.';
+        if (memoryGameNext) memoryGameNext.hidden = false;
+      } else if (memoryGameStatus) {
+        memoryGameStatus.textContent = 'Pasangan ketemu: ' + card.dataset.label + '. Cari pasangan lainnya.';
+      }
+      return;
+    }
+
+    firstCard.classList.add('is-mismatch');
+    card.classList.add('is-mismatch');
+    if (memoryGameStatus) memoryGameStatus.textContent = 'Belum cocok. Kartu akan tertutup lagi.';
+    memoryChecking = true;
+    memoryMismatchTimer = window.setTimeout(() => {
+      hideMemoryCard(firstCard);
+      hideMemoryCard(card);
+      memoryChecking = false;
+      if (memoryGameStatus) memoryGameStatus.textContent = 'Silakan coba pasangan lain.';
+    }, 650);
+  }
+
+  function startMemoryGame() {
+    if (!memoryGameBoard) return;
+
+    window.clearTimeout(memoryMismatchTimer);
+    memoryMismatchTimer = 0;
+    memoryFirstCard = null;
+    memoryChecking = false;
+    memoryMatchedPairs = 0;
+    memoryAttempts = 0;
+    if (memoryGameNext) memoryGameNext.hidden = true;
+
+    const cards = memoryLabels.flatMap((label, pair) => [
+      { label, pair },
+      { label, pair }
+    ]);
+    for (let index = cards.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [cards[index], cards[swapIndex]] = [cards[swapIndex], cards[index]];
+    }
+
+    memoryGameBoard.replaceChildren();
+    cards.forEach((card, index) => {
+      const item = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'memory-game-card';
+      button.textContent = '♡';
+      button.dataset.pair = String(card.pair);
+      button.dataset.label = card.label;
+      button.dataset.position = String(index + 1);
+      button.setAttribute('aria-label', 'Kartu ' + (index + 1) + ', tertutup');
+      button.setAttribute('aria-pressed', 'false');
+      button.addEventListener('click', () => chooseMemoryCard(button));
+      item.appendChild(button);
+      memoryGameBoard.appendChild(item);
+    });
+
+    memoryGameBoard.hidden = false;
+    if (memoryGameFallback) memoryGameFallback.hidden = true;
+    if (memoryGameSummary) memoryGameSummary.hidden = false;
+    if (memoryGameStatus) {
+      memoryGameStatus.hidden = false;
+      memoryGameStatus.textContent = 'Kartu sudah siap. Pilih dua kartu untuk mencari pasangan.';
+    }
+    if (memoryGameRestart) memoryGameRestart.hidden = false;
+    updateMemoryGameSummary();
+  }
+
+  if (memoryGameBoard && memoryGameRestart) {
+    memoryGameRestart.addEventListener('click', startMemoryGame);
+    startMemoryGame();
   }
 
   /* =====================================================
